@@ -80,6 +80,8 @@
 		<string>CDVSplashScreen</string>
 		<key>Battery</key>
 		<string>CDVBattery</string>
+		<key>ActionSheet</key>
+		<string>ActionSheet</string>
 	</dict>
 </dict>
 </plist>

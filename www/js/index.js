@@ -33,17 +33,47 @@ var app = {
     // The scope of `this` is the event. In order to call the `receivedEvent`
     // function, we must explicity call `app.receivedEvent(...);`
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
+        
     }
 };
+
+document.getElementById('add-photo').onclick = function(event) {
+    event.preventDefault();
+    // summon dialog to allow user to take photo or choose photo from library
+    window.plugins.actionSheet.create(
+        null,
+        ['Take Photo', 'Choose Existing', 'Cancel'],
+        function(buttonValue, buttonIndex) {
+            switch (arguments[1]) {
+                case 0:
+                    capturePhoto();
+                    break;
+                case 1:
+                    getPhoto();
+                    break;
+            }
+        },
+        { cancelButtonIndex: 2 }
+    ); 
+}
+
+function getPhoto() {
+    navigator.camera.getPicture(onSuccess, onFail, {
+        quality: 50,
+        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+        destinationType: Camera.DestinationType.FILE_URI }); 
+
+    function onSuccess(imageURI) {
+        var img = document.createElement('img');
+        img.setAttribute('src', imageURI);
+        img.setAttribute('class', 'item-image');
+        document.body.appendChild(img);
+        imageURI
+    }
+
+    function onFail(message) {
+        alert('Failed because: ' + message);
+    }
+}
+
+
