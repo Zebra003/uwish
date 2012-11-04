@@ -20,15 +20,14 @@
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
-    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
 
     /* XXX a bit scarry, setting all margins and padding on everything */
-    margin: 0;
-    padding: 0;
+    /*margin: 0;
+    padding: 0;*/
 }
 
 /* Portrait layout (default) */
-.add-item {
+.new-item-box {
     position: fixed;
     bottom: 0;
 }
