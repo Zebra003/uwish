@@ -37,7 +37,7 @@ var app = {
     }
 };
 
-document.getElementById('add-photo').onclick = function(event) {
+$('.photo').on('click', function(event) {
     event.preventDefault();
     // summon dialog to allow user to take photo or choose photo from library
     window.plugins.actionSheet.create(
@@ -55,11 +55,11 @@ document.getElementById('add-photo').onclick = function(event) {
         },
         { cancelButtonIndex: 2 }
     ); 
-}
+});
 
 document.getElementById('add-item').onclick = function(event) {
     event.preventDefault();
-    app.currentText = document.getElementById('new-wish-text').value;
+    app.currentText = $('.new-item textarea').val();
     if (!app.currentImageURI && !app.currentText) return;
 
     var item = '<div>'
@@ -69,6 +69,8 @@ document.getElementById('add-item').onclick = function(event) {
         item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
     }
     item += '</div>';
+
+    console.log(item);
 
     $('.app').append($(item));
 }
