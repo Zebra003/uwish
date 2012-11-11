@@ -58,24 +58,17 @@ document.getElementById('add-photo').onclick = function(event) {
 }
 
 document.getElementById('add-item').onclick = function(event) {
-    console.log('add-item');
     event.preventDefault();
     app.currentText = document.getElementById('new-wish-text').value;
-    console.log('app.currentText: "' + app.currentText + '"');
     if (!app.currentImageURI && !app.currentText) return;
-    console.log('got passed the point of return');
     
     // TODO better names
 
     var div = document.createElement('div');
-    console.log('3');
 
     var p = document.createElement('p');
-    console.log('0');
     p.textContent = app.currentText;
     div.appendChild(p);
-
-    console.log('1');
 
     if (app.currentImageURI) {
         var img = document.createElement('img');
@@ -84,12 +77,7 @@ document.getElementById('add-item').onclick = function(event) {
         div.appendChild(img);
     }
 
-    console.log('2');
-
     document.querySelector('.app').appendChild(div);
-    //document.body.appendChild(div);
-
-    console.log('exiting add-item');
 }
 
 function getPhoto(sourceType) {
