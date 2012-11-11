@@ -61,34 +61,21 @@ document.getElementById('add-item').onclick = function(event) {
     event.preventDefault();
     app.currentText = document.getElementById('new-wish-text').value;
     if (!app.currentImageURI && !app.currentText) return;
-    
-    // TODO better names
 
-    var item = document.createElement('div');
-
-    var p = document.createElement('p');
-    p.textContent = app.currentText;
-    item.appendChild(p);
-
-    var removeItem = document.createElement('button');
-    removeItem.textContent = 'remove';
-    removeItem.onclick = function(event) {
-        //this.parent.remove();
-        console.log('clicked remove.');
-        var item = this.parentNode;
-        item.parentNode.removeChild(item);
-    }
-    item.appendChild(removeItem);
-
+    var item = '<div>'
+             + '<p>' + app.currentText + '</p>'
+             + '<button class="remove-item">remove</button>';
     if (app.currentImageURI) {
-        var img = document.createElement('img');
-        img.setAttribute('src', app.currentImageURI);
-        img.setAttribute('class', 'item-image');
-        item.appendChild(img);
+        item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
     }
+    item += '</div>';
 
-    document.querySelector('.app').appendChild(item);
+    $('.app').append($(item));
 }
+
+$('button.remove-item').live('click', function() {
+    $(this).parent().remove();
+});
 
 function getPhoto(sourceType) {
     navigator.camera.getPicture(onSuccess, onFail, {
