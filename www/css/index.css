@@ -27,10 +27,20 @@
 }
 
 /* Portrait layout (default) */
+body {
+    margin: 0px;
+}
+
 .new-item {
     position: fixed;
-    bottom: 2px;
+    bottom: 0px;
+    padding-left: 7px;
+    padding-bottom: 6px;
+    width: 100%;
+    box-shadow: 0px -1px 5px #999;
+    background: #ddd;
 }
+
 .new-item .photo {
     width: 64px;
     min-height: 64px;
