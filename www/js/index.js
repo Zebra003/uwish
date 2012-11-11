@@ -64,20 +64,30 @@ document.getElementById('add-item').onclick = function(event) {
     
     // TODO better names
 
-    var div = document.createElement('div');
+    var item = document.createElement('div');
 
     var p = document.createElement('p');
     p.textContent = app.currentText;
-    div.appendChild(p);
+    item.appendChild(p);
+
+    var removeItem = document.createElement('button');
+    removeItem.textContent = 'remove';
+    removeItem.onclick = function(event) {
+        //this.parent.remove();
+        console.log('clicked remove.');
+        var item = this.parentNode;
+        item.parentNode.removeChild(item);
+    }
+    item.appendChild(removeItem);
 
     if (app.currentImageURI) {
         var img = document.createElement('img');
         img.setAttribute('src', app.currentImageURI);
         img.setAttribute('class', 'item-image');
-        div.appendChild(img);
+        item.appendChild(img);
     }
 
-    document.querySelector('.app').appendChild(div);
+    document.querySelector('.app').appendChild(item);
 }
 
 function getPhoto(sourceType) {
