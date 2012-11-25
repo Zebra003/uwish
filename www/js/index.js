@@ -57,23 +57,30 @@ $('.photo').on('click', function(event) {
     ); 
 });
 
-document.getElementById('add-item').onclick = function(event) {
+function saveItem(event) {
     event.preventDefault();
     app.currentText = $('.new-item textarea').val();
     if (!app.currentImageURI && !app.currentText) return;
 
-    var item = '<div>'
-             + '<p>' + app.currentText + '</p>'
-             + '<button class="remove-item">remove</button>';
+    var item = '<li>';
+    
     if (app.currentImageURI) {
         item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
     }
-    item += '</div>';
 
-    console.log(item);
+    item += '<p>' + app.currentText + '</p>'
+    	+ '<div style="clear:left;"></div>';
+     //+ '<button class="remove-item">remove</button>';
+    item += '</li>';
 
-    $('.app').append($(item));
+    $('#thelist').append($(item));
+    myScroll.refresh();
+    $('.new-item textarea').val('');
 }
+
+$('form').submit(saveItem);
+document.getElementById('add-item').onclick = saveItem;
+
 
 $('button.remove-item').live('click', function() {
     $(this).parent().remove();
