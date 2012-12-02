@@ -62,15 +62,25 @@ function saveItem(event) {
     app.currentText = $('.new-item textarea').val();
     if (!app.currentImageURI && !app.currentText) return;
 
+	var header = '', text = '';
+	if (app.currentText) {
+		var textSections = app.currentText.split("\n");
+		header = textSections[0];
+		if (textSections.length > 1) text = textSections.splice(1).join("\n");
+	}
+
     var item = '<li>';
     
     if (app.currentImageURI) {
         item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
     }
 
-    item += '<p>' + app.currentText + '</p>'
+    item += '<h2>' + header + '</h2>'
+    	// TODO Perhaps don't show if not present...
+    	+ '<p>' + text + '</p>'
+        + '<button id="remove-item"></button>'
     	+ '<div style="clear:left;"></div>';
-     //+ '<button class="remove-item">remove</button>';
+    
     item += '</li>';
 
     $('#thelist').append($(item));

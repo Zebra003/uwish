@@ -52,6 +52,14 @@
     border: solid 2px #888;
 }
 
+#thelist li {
+	position: relative;
+	margin-top: 1px;
+    padding: 0 10px;
+    background-color:#fafafa;
+    font-size:14px;
+}
+
 button#add-item {
 	margin-left: -15px;
     width: 24px;
@@ -60,10 +68,22 @@ button#add-item {
     border: 0;
 }
 
+button#remove-item {
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+    width: 24px;
+    height: 24px;
+    background: url('../img/icons/24x24/error.png');
+    border: 0;
+}
+
 #thelist li img {
+	position: relative;
     float: left;
     height: 95px;
     margin: 5px;
+    margin-left: -2px;
     margin-right: 22px;
     border-radius: 12px 12px;
 }
@@ -118,10 +138,4 @@ body {
     margin:0;
     width:100%;
     text-align:left;
-}
-
-#scroller li {
-    padding: 0 10px;
-    background-color:#fafafa;
-    font-size:14px;
 }
