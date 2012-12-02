@@ -33,12 +33,20 @@
     background: #ddd;
 }
 
-.new-item .photo {
+.new-item .photo, .new-item .photo img {
     width: 64px;
-    min-height: 64px;
+    height: 59px;
+}
+.new-item .photo {
     margin-left: 9px;
-    background: url(../img/icons/64x64/photo-camera.png);
+    margin-top: 9px;
+    background-image: url(../img/icons/64x64/photo-camera.png);
+   	background-repeat: no-repeat;
+   	background-size: 64px;
     border: 0;
+}
+.new-item .photo img {
+    border-radius: 8px;
 }
 
 .new-item .photo, .new-item .text {

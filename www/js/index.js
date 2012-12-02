@@ -39,6 +39,12 @@ var app = {
 
 $('.photo').on('click', function(event) {
     event.preventDefault();
+    
+    if (!window.plugins || !window.plugins.actionSheet) {
+    	onSuccessAddedPhoto('http://placekitten.com/300/300');
+    	return;
+    }
+    
     // summon dialog to allow user to take photo or choose photo from library
     window.plugins.actionSheet.create(
         null,
@@ -46,16 +52,49 @@ $('.photo').on('click', function(event) {
         function(buttonValue, buttonIndex) {
             switch (arguments[1]) {
                 case 0:
-                    getPhoto(Camera.PictureSourceType.CAMERA);
+                    getPhoto(Camera.PictureSourceType.CAMERA, onSuccessAddedPhoto);
                     break;
                 case 1:
-                    getPhoto(Camera.PictureSourceType.PHOTOLIBRARY);
+                    getPhoto(Camera.PictureSourceType.PHOTOLIBRARY, onSuccessAddedPhoto);
                     break;
             }
         },
         { cancelButtonIndex: 2 }
-    ); 
+    );
 });
+
+$('#thelist li img').live('click', function(event) {
+    event.preventDefault();
+
+	var self = this;
+    function onSuccessChangedPhoto(imageURI) {
+		$(self).attr('src', imageURI);
+	}
+    
+    if (!window.plugins || !window.plugins.actionSheet) {
+    	onSuccessChangedPhoto('http://placekitten.com/300/300');
+    	return;
+    }
+    
+    // summon dialog to allow user to take photo or choose photo from library
+    window.plugins.actionSheet.create(
+        null,
+        ['Take Photo', 'Choose Existing', 'Cancel'],
+        function(buttonValue, buttonIndex) {
+            switch (arguments[1]) {
+                case 0:
+                    getPhoto(Camera.PictureSourceType.CAMERA, onSuccessChangedPhoto);
+                    break;
+                case 1:
+                    getPhoto(Camera.PictureSourceType.PHOTOLIBRARY, onSuccessChangedPhoto);
+                    break;
+            }
+        },
+        { cancelButtonIndex: 2 }
+    );
+});
+
+
 
 function saveItem(event) {
     event.preventDefault();
@@ -67,10 +106,13 @@ function saveItem(event) {
 		var textSections = app.currentText.split("\n");
 		header = textSections[0];
 		if (textSections.length > 1) text = textSections.splice(1).join("\n");
+		
+		if (!app.currentImageURI) {
+			app.currentImageURI = 'img/placeholder-photo.png';
+		}
 	}
 
     var item = '<li>';
-    
     if (app.currentImageURI) {
         item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
     }
@@ -86,6 +128,8 @@ function saveItem(event) {
     $('#thelist').append($(item));
     myScroll.refresh();
     $('.new-item textarea').val('');
+    app.currentImageURI = '';
+    $('.photo img').remove();
 }
 
 $('form').submit(saveItem);
@@ -96,23 +140,21 @@ $('button.remove-item').live('click', function() {
     $(this).parent().remove();
 });
 
-function getPhoto(sourceType) {
-    navigator.camera.getPicture(onSuccess, onFail, {
+
+// extracted from getPhoto to allow fallback functionality
+function onSuccessAddedPhoto(imageURI) {
+    app.currentImageURI = imageURI;
+	$('.photo img').remove();
+	$('.photo').append('<img src="' + app.currentImageURI + '" />');
+}
+
+function getPhoto(sourceType, onSuccessCallback) {
+    navigator.camera.getPicture(onSuccessCallback, onFail, {
         quality: 50,
         sourceType: sourceType,
         destinationType: Camera.DestinationType.FILE_URI }); 
-
-    function onSuccess(imageURI) {
-        app.currentImageURI = imageURI;
-        /*var img = document.createElement('img');
-        img.setAttribute('src', imageURI);
-        img.setAttribute('class', 'item-image');
-        document.body.appendChild(img);*/
-    }
 
     function onFail(message) {
         alert('Failed because: ' + message);
     }
 }
-
-
