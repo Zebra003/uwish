@@ -75,11 +75,11 @@ function saveItem(event) {
         item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
     }
 
-    item += '<h2>' + header + '</h2>'
+    item += '<div class="item-text"><h2>' + header + '</h2>'
     	// TODO Perhaps don't show if not present...
-    	+ '<p>' + text + '</p>'
-        + '<button id="remove-item"></button>'
-    	+ '<div style="clear:left;"></div>';
+    	+ '<p>' + text + '</p></div>'
+        + '<button class="remove-item"></button>'
+        + '<div style="clear:left;">';
     
     item += '</li>';
 

@@ -68,7 +68,7 @@ button#add-item {
     border: 0;
 }
 
-button#remove-item {
+button.remove-item {
 	position: absolute;
 	right: 5px;
 	bottom: 5px;
@@ -84,14 +84,17 @@ button#remove-item {
     height: 95px;
     margin: 5px;
     margin-left: -2px;
-    margin-right: 22px;
+    margin-right: 10px;
     border-radius: 12px 12px;
 }
-#thelist li p {
-	margin: 0;
-	padding: 10px;
-}
 
+#thelist li .item-text {
+	padding-top: 10px;
+}
+#thelist li .item-text h2, #thelist li .item-text p {
+	margin: 0;
+	font-size:16px;	
+}
 
 
 body,ul,li {
@@ -101,7 +104,6 @@ body,ul,li {
 }
 
 body {
-    font-size:12px;
     -webkit-user-select:none;
     -webkit-text-size-adjust:none;
     font-family:helvetica;
