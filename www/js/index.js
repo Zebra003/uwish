@@ -40,6 +40,7 @@ var app = {
 $('.photo').on('click', function(event) {
     event.preventDefault();
     
+    // for testing in a browser
     if (!window.plugins || !window.plugins.actionSheet) {
     	onSuccessAddedPhoto('http://placekitten.com/300/300');
     	return;
@@ -71,6 +72,7 @@ $('#thelist li img').live('click', function(event) {
 		$(self).attr('src', imageURI);
 	}
     
+    // for testing in a browser
     if (!window.plugins || !window.plugins.actionSheet) {
     	onSuccessChangedPhoto('http://placekitten.com/300/300');
     	return;
@@ -133,7 +135,7 @@ function saveItem(event) {
 }
 
 $('form').submit(saveItem);
-document.getElementById('add-item').onclick = saveItem;
+$('#add-item').click = saveItem;
 
 
 $('button.remove-item').live('click', function() {
