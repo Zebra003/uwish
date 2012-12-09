@@ -17,59 +17,70 @@ function onDeviceReady() {
 
 	var currentImageURI;
 
+	$('.make-wish .picture-frame').on('click',
+		allowUserToAddPicture(
+			function(imageURI, context) {
+			    currentImageURI = imageURI;
+				$(context).find('img').remove();
+				$(context).append('<img src="' + currentImageURI + '" />');
+			}
+		)
+	);
 
+	$('.wishes li img').live('click',
+		allowUserToAddPicture(
+			function(imageURI, context) {
+				$(context).attr('src', imageURI);
+			}
+		)
+	);
 
-	$('.make-wish .picture-frame').on('click', function(event) {
-	    // for testing in a browser
-	    if (!window.plugins || !window.plugins.actionSheet) {
-	    	onSuccessAddedPhoto('http://placekitten.com/300/300');
-	    	return;
-	    }
-
-	    // summon dialog to allow user to take photo or choose photo from library
-	    window.plugins.actionSheet.create(
-	        null,
-	        ['Take Photo', 'Choose Existing', 'Cancel'],
-	        function(buttonValue, buttonIndex) {
-	        	if (buttonIndex == 0)  {
-	        		getPhoto(Camera.PictureSourceType.CAMERA, onSuccessAddedPhoto);
-	        	} else if (buttonIndex == 1)  {
-	        		getPhoto(Camera.PictureSourceType.PHOTOLIBRARY, onSuccessAddedPhoto);
-	        	}
-	        },
-	        { cancelButtonIndex: 2 }
-	    );
-	});
-
-	$('.wishes li img').live('click', function(event) {
-		var self = this;
-	    function onSuccessChangedPhoto(imageURI) {
-			$(self).attr('src', imageURI);
+	function allowUserToAddPicture(onSuccess) {
+		
+		function getPhoto(sourceType, onSuccessCallback) {
+		    navigator.camera.getPicture(onSuccessCallback, onFail, {
+		        quality: 50,
+		        sourceType: sourceType,
+		        destinationType: Camera.DestinationType.FILE_URI }); 
+		
+		    function onFail(message) {
+		        alert('Failed because: ' + message);
+		    }
 		}
 
-	    // for testing in a browser
-	    if (!window.plugins || !window.plugins.actionSheet) {
-	    	onSuccessChangedPhoto('http://placekitten.com/300/300');
-	    	return;
-	    }
+		return function(event) {
+			
+			var _this = this;
+			function innerSuccess(imageURI) {
+			  onSuccess(imageURI, _this);
+			};
 
-	    // summon dialog to allow user to take photo or choose photo from library
-	    window.plugins.actionSheet.create(
-	        null,
-	        ['Take Photo', 'Choose Existing', 'Cancel'],
-	        function(buttonValue, buttonIndex) {
-	        	if (buttonIndex == 0)  {
-	        		getPhoto(Camera.PictureSourceType.CAMERA, onSuccessChangedPhoto);
-	        	} else if (buttonIndex == 1)  {
-	        		getPhoto(Camera.PictureSourceType.PHOTOLIBRARY, onSuccessChangedPhoto);
-	        	}
-	        },
-	        { cancelButtonIndex: 2 }
-	    );
-	});
+		    // for testing in a browser
+		    if (!window.plugins || !window.plugins.actionSheet) {
+		    	innerSuccess('http://placekitten.com/300/300');
+		    	return;
+		    }
+
+		    // summon dialog to allow user to take photo or choose photo from library
+		    window.plugins.actionSheet.create(
+		        null,
+		        ['Take Photo', 'Choose Existing', 'Cancel'],
+		        function(buttonValue, buttonIndex) {
+		        	if (buttonIndex == 0)  {
+		        		getPhoto(Camera.PictureSourceType.CAMERA, innerSuccess);
+		        	} else if (buttonIndex == 1)  {
+		        		getPhoto(Camera.PictureSourceType.PHOTOLIBRARY, innerSuccess);
+		        	}
+		        },
+		        { cancelButtonIndex: 2 }
+		    );
+		}
+	}
 
 
-
+	
+	// make a wish
+	
 	$('form.make-wish').submit(function(event) {
 	    event.preventDefault();
 	    var currentText = $('.make-wish textarea').val();
@@ -85,48 +96,32 @@ function onDeviceReady() {
 				currentImageURI = 'img/placeholder-photo.png';
 			}
 		}
-	
+
 	    var item = '<li>';
 	    if (currentImageURI) {
 	        item += '<img src="' + currentImageURI + '" />';    
 	    }
-	
+
 	    item += '<div class="description"><h2>' + header + '</h2>'
 	    	+ '<p>' + text + '</p></div>'
 	        + '<button class="remove"></button>'
 	        + '<div style="clear:left;">';
 	    
 	    item += '</li>';
-	
+
 	    $('.wishes').append($(item));
 	    myScroll.refresh();
 	    $('.make-wish textarea').val('');
 	    currentImageURI = '';
 	    $('.make-wish .picture-frame img').remove();
 	});
-	
-	
+
+
+
+	// revoke wish
+
 	$('.wishes button.remove').live('click', function() {
 	    $(this).parent().remove();
 	    myScroll.refresh();
-	});
-	
-	
-	// extracted from getPhoto to allow fallback functionality
-	function onSuccessAddedPhoto(imageURI) {
-	    currentImageURI = imageURI;
-		$('.make-wish .picture-frame img').remove();
-		$('.make-wish .picture-frame').append('<img src="' + currentImageURI + '" />');
-	}
-	
-	function getPhoto(sourceType, onSuccessCallback) {
-	    navigator.camera.getPicture(onSuccessCallback, onFail, {
-	        quality: 50,
-	        sourceType: sourceType,
-	        destinationType: Camera.DestinationType.FILE_URI }); 
-	
-	    function onFail(message) {
-	        alert('Failed because: ' + message);
-	    }
-	}
+	});	
 }
