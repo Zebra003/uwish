@@ -1,9 +1,3 @@
-
-
-var app = {};
-
-
-
 if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
 	document.addEventListener('deviceready', onDeviceReady, false);
 } else {
@@ -14,7 +8,9 @@ if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
 }
 
 function onDeviceReady() {
-
+	
+	var currentImageURI;
+	
 	// iScroll 4
 	var myScroll = new iScroll('wrapper');
 	document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
@@ -82,23 +78,23 @@ function onDeviceReady() {
 	
 	function saveItem(event) {
 	    event.preventDefault();
-	    app.currentText = $('.make-wish textarea').val();
-	    if (!app.currentImageURI && !app.currentText) return;
+	    var currentText = $('.make-wish textarea').val();
+	    if (!currentImageURI && !currentText) return;
 	
 		var header = '', text = '';
-		if (app.currentText) {
-			var textSections = app.currentText.split("\n");
+		if (currentText) {
+			var textSections = currentText.split("\n");
 			header = textSections[0];
 			if (textSections.length > 1) text = textSections.splice(1).join("\n");
 			
-			if (!app.currentImageURI) {
-				app.currentImageURI = 'img/placeholder-photo.png';
+			if (!currentImageURI) {
+				currentImageURI = 'img/placeholder-photo.png';
 			}
 		}
 	
 	    var item = '<li>';
-	    if (app.currentImageURI) {
-	        item += '<img src="' + app.currentImageURI + '" />';    
+	    if (currentImageURI) {
+	        item += '<img src="' + currentImageURI + '" />';    
 	    }
 	
 	    item += '<div class="description"><h2>' + header + '</h2>'
@@ -112,7 +108,7 @@ function onDeviceReady() {
 	    $('.wishes').append($(item));
 	    myScroll.refresh();
 	    $('.make-wish textarea').val('');
-	    app.currentImageURI = '';
+	    currentImageURI = '';
 	    $('.make-wish .picture-frame img').remove();
 	}
 	
@@ -126,9 +122,9 @@ function onDeviceReady() {
 	
 	// extracted from getPhoto to allow fallback functionality
 	function onSuccessAddedPhoto(imageURI) {
-	    app.currentImageURI = imageURI;
+	    currentImageURI = imageURI;
 		$('.make-wish .picture-frame img').remove();
-		$('.make-wish .picture-frame').append('<img src="' + app.currentImageURI + '" />');
+		$('.make-wish .picture-frame').append('<img src="' + currentImageURI + '" />');
 	}
 	
 	function getPhoto(sourceType, onSuccessCallback) {
