@@ -25,39 +25,28 @@
 
         <link rel="stylesheet" type="text/css" href="css/index.css" />
 
-        <script type="application/javascript" src="js/iscroll.js"></script>
-        <script type="text/javascript">
-            var myScroll;
-            function loaded() {
-                myScroll = new iScroll('wrapper');
-            }
-            document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-            document.addEventListener('DOMContentLoaded', loaded, false);
-        </script>
-
         <title>uWish</title>
     </head>
     
     <body>
 		<div id="wrapper">
 		    <div id="scroller">
-		        <ul id="thelist"></ul>
+		        <ul class="wishes"></ul>
 		    </div>
 		</div>
 		
 		<div id="footer">
-	        <div class="make-wish">
-	            <form action="" method="post">
-	                <div class="picture-frame"></div>
-	                <textarea placeholder="What I want"></textarea>
-	                <button type="submit"></button>
-            	</form>
-        	</div>
+            <form action="" method="post" class="make-wish">
+                <div class="picture-frame"></div>
+                <textarea placeholder="What I want"></textarea>
+                <button type="submit"></button>
+        	</form>
 		</div>
 		
         <script type="text/javascript" src="cordova-2.1.0.js"></script>
         <script type="text/javascript" src="js/plugins/ActionSheet.js"></script>
         <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" src="js/iscroll.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
             app.initialize();

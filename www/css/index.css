@@ -1,8 +1,15 @@
+
+/* PhoneGap defaults */
+
 * {
     -webkit-touch-callout: none;                   /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;                /* prevent webkit from resizing text to fit */
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
+
+
+
+/* wish making form */
 
 .make-wish {
 	width: 100%;
@@ -49,7 +56,9 @@
 
 
 
-#thelist li {
+/* wish list */
+
+.wishes li {
 	position: relative;
 	margin-top: 1px;
     padding: 0 10px;
@@ -57,7 +66,7 @@
     font-size:14px;
 }
 
-button.remove-item {
+.wishes button.remove {
 	position: absolute;
 	right: 5px;
 	bottom: 5px;
@@ -67,7 +76,7 @@ button.remove-item {
     border: 0;
 }
 
-#thelist li img {
+.wishes li img {
 	position: relative;
     float: left;
     height: 95px;
@@ -77,11 +86,11 @@ button.remove-item {
     border-radius: 12px 12px;
 }
 
-#thelist li .item-text {
+.wishes li .description {
 	padding-top: 10px;
 	padding-bottom: 20px;
 }
-#thelist li .item-text h2, #thelist li .item-text p {
+.wishes li .description h2, .wishes li .description p {
 	margin: 0;
 	display: table;
 	word-break: break-all;

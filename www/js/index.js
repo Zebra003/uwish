@@ -16,6 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+
+
+var myScroll;
+function loaded() {
+    myScroll = new iScroll('wrapper');
+}
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+document.addEventListener('DOMContentLoaded', loaded, false);
+
+
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -64,7 +76,7 @@ $('.make-wish .picture-frame').on('click', function(event) {
     );
 });
 
-$('#thelist li img').live('click', function(event) {
+$('.wishes li img').live('click', function(event) {
     event.preventDefault();
 
 	var self = this;
@@ -116,28 +128,29 @@ function saveItem(event) {
 
     var item = '<li>';
     if (app.currentImageURI) {
-        item += '<img src="' + app.currentImageURI + '" class="item-image" />';    
+        item += '<img src="' + app.currentImageURI + '" />';    
     }
 
-    item += '<div class="item-text"><h2>' + header + '</h2>'
+    item += '<div class="description"><h2>' + header + '</h2>'
     	// TODO Perhaps don't show if not present...
     	+ '<p>' + text + '</p></div>'
-        + '<button class="remove-item"></button>'
+        + '<button class="remove"></button>'
         + '<div style="clear:left;">';
     
     item += '</li>';
 
-    $('#thelist').append($(item));
+    $('.wishes').append($(item));
     myScroll.refresh();
     $('.make-wish textarea').val('');
     app.currentImageURI = '';
     $('.make-wish .picture-frame img').remove();
 }
 
-$('form').submit(saveItem);
+$('form.make-wish').submit(saveItem);
 
-$('button.remove-item').live('click', function() {
+$('.wishes button.remove').live('click', function() {
     $(this).parent().remove();
+    myScroll.refresh();
 });
 
 
