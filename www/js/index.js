@@ -37,7 +37,7 @@ var app = {
     }
 };
 
-$('.photo').on('click', function(event) {
+$('.make-wish .picture-frame').on('click', function(event) {
     event.preventDefault();
     
     // for testing in a browser
@@ -100,7 +100,7 @@ $('#thelist li img').live('click', function(event) {
 
 function saveItem(event) {
     event.preventDefault();
-    app.currentText = $('.new-item textarea').val();
+    app.currentText = $('.make-wish textarea').val();
     if (!app.currentImageURI && !app.currentText) return;
 
 	var header = '', text = '';
@@ -129,14 +129,12 @@ function saveItem(event) {
 
     $('#thelist').append($(item));
     myScroll.refresh();
-    $('.new-item textarea').val('');
+    $('.make-wish textarea').val('');
     app.currentImageURI = '';
-    $('.photo img').remove();
+    $('.make-wish .picture-frame img').remove();
 }
 
 $('form').submit(saveItem);
-$('#add-item').click = saveItem;
-
 
 $('button.remove-item').live('click', function() {
     $(this).parent().remove();
@@ -146,8 +144,8 @@ $('button.remove-item').live('click', function() {
 // extracted from getPhoto to allow fallback functionality
 function onSuccessAddedPhoto(imageURI) {
     app.currentImageURI = imageURI;
-	$('.photo img').remove();
-	$('.photo').append('<img src="' + app.currentImageURI + '" />');
+	$('.make-wish .picture-frame img').remove();
+	$('.make-wish .picture-frame').append('<img src="' + app.currentImageURI + '" />');
 }
 
 function getPhoto(sourceType, onSuccessCallback) {
