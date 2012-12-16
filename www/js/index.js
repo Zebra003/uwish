@@ -17,6 +17,7 @@ function onDeviceReady() {
 
 	var currentImageURI;
 
+	// add image from "make-wish"
 	$('.make-wish .picture-frame').on('click',
 		allowUserToAddPicture(
 			function(imageURI, context) {
@@ -27,6 +28,7 @@ function onDeviceReady() {
 		)
 	);
 
+	// change image on wishes
 	$('.wishes li img').live('click',
 		allowUserToAddPicture(
 			function(imageURI, context) {
@@ -37,15 +39,14 @@ function onDeviceReady() {
 
 	function allowUserToAddPicture(onSuccess) {
 		
+		// communicate with iPhone - get picture
 		function getPhoto(sourceType, onSuccessCallback) {
 		    navigator.camera.getPicture(onSuccessCallback, onFail, {
 		        quality: 50,
 		        sourceType: sourceType,
 		        destinationType: Camera.DestinationType.FILE_URI }); 
 		
-		    function onFail(message) {
-		        alert('Failed because: ' + message);
-		    }
+		    function onFail(message) {}
 		}
 
 		return function(event) {
@@ -83,9 +84,9 @@ function onDeviceReady() {
 	
 	$('form.make-wish').submit(function(event) {
 	    event.preventDefault();
-	    var currentText = $('.make-wish textarea').val();
+	    var currentText = $(this).find('textarea').val();
 	    if (!currentImageURI && !currentText) return;
-	
+
 		var header = '', text = '';
 		if (currentText) {
 			var textSections = currentText.split("\n");
