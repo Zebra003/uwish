@@ -28,15 +28,6 @@ function onDeviceReady() {
 		)
 	);
 
-	// change image on wishes
-	$('.wishes li img').live('click',
-		allowUserToAddPicture(
-			function(imageURI, context) {
-				$(context).attr('src', imageURI);
-			}
-		)
-	);
-
 	function allowUserToAddPicture(onSuccess) {
 		
 		// communicate with iPhone - get picture
@@ -98,31 +89,38 @@ function onDeviceReady() {
 			}
 		}
 
-	    var item = '<li>';
+	    var wish = '<li>';
 	    if (currentImageURI) {
-	        item += '<img src="' + currentImageURI + '" />';    
+	        wish += '<img src="' + currentImageURI + '" />';    
 	    }
 
-	    item += '<div class="description"><h2>' + header + '</h2>'
+	    wish += '<div class="description"><h2>' + header + '</h2>'
 	    	+ '<p>' + text + '</p></div>'
 	        + '<button class="remove"></button>'
 	        + '<div style="clear:left;">';
 	    
-	    item += '</li>';
+	    wish += '</li>';
 
-	    $('.wishes').append($(item));
-	    myScroll.refresh();
-	    $('.make-wish textarea').val('');
-	    currentImageURI = '';
-	    $('.make-wish .picture-frame img').remove();
+		// make remove button work
+		wish = $(wish);
+		wish.find('button.remove').click(function() {
+			$(this).parent().remove();
+		    myScroll.refresh();
+		});
+
+		// change image on wishes
+		wish.find('img').click(
+			allowUserToAddPicture(
+				function(imageURI, context) {
+					$(context).attr('src', imageURI);
+				}
+			)
+		);
+
+		$('.wishes').append(wish);
+		myScroll.refresh();
+		$('.make-wish textarea').val('');
+		currentImageURI = '';
+		$('.make-wish .picture-frame img').remove();
 	});
-
-
-
-	// revoke wish
-
-	$('.wishes button.remove').live('click', function() {
-	    $(this).parent().remove();
-	    myScroll.refresh();
-	});	
 }
