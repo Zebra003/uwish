@@ -95,8 +95,8 @@ function onDeviceReady() {
             wish += '<img src="' + currentImageURI + '" />';
         }
 
-        wish += '<div class="description"><h2>' + urlize(header) + '</h2>';
-        wish += '<p>' + urlize(text) + '</p></div>';
+        wish += '<div class="description"><h2>' + header + '</h2>';
+        wish += '<p>' + text + '</p></div>';
         wish += '<button class="remove"></button>';
         wish += '<div style="clear:left;">';
 
