@@ -40,7 +40,9 @@ function loadWishes(uuid) {
 			wish.find('img').click(
 			    allowUserToAddPicture(
 			        function(imageURI, context) {
-			            $(context).attr('src', imageURI);
+						$.post(window.server + uuid + '/wishes/' + index, { _method: 'put', image: imageURI }, function(response) {
+							loadWishes(uuid);
+						});
 			        }
 			    )
 			);
