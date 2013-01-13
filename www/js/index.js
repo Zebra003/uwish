@@ -62,7 +62,7 @@ function onDeviceReady() {
 	// for testing in a browser
 	if (! window.device) {
 		window.device = {
-			uuid: 'probabably-web-browser'	
+			uuid: 'web-browser'	
 		};
 		window.server = 'http://localhost:5000/';
 	}
