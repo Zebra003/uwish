@@ -21,16 +21,19 @@ function attach_wish_behaviour(wish, index, uuid) {
 	// make remove button work
 	wish = $(wish);
 	wish.find('button.remove').click(function() {
+		$(this).parent().transition({ scale: [1, 0], opacity: 0 }, function() {
+			$(this).remove();
+			myScroll.refresh();
+		});
 		$.ajax({
 			type: 'POST',
 			url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
 			data: { _method: 'delete' },
 			success: function(response) {
-				loadWishes(uuid);
+				// TODO? error handling
 			}
 		});
 	});
-	
 	// change image on wishes
 	wish.find('img').click(
 	    allowUserToAddPicture(
@@ -52,15 +55,16 @@ function attach_wish_behaviour(wish, index, uuid) {
 function loadWishes(uuid) {
 	$.ajax({
 		url: window.server + uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
-		success: function(wishes) {
+		success: function(localWishes) {
 			$('.wishes').html('');
-			wishes.map(function(data, index) {
+			localWishes.map(function(data, index) {
 				if (! data) return;
 				var wish = render('wish', data);
 				wish = attach_wish_behaviour(wish, index, uuid);
 				$('.wishes').append(wish);
 				myScroll.refresh();
 			});
+			wishes = localWishes;
 		}
 	});
 }
@@ -68,6 +72,7 @@ function loadWishes(uuid) {
 
 
 var myScroll;
+var wishes = [];
 function onDeviceReady() {
 	
 	window.server = 'http://evening-escarpment-5061.herokuapp.com/';
@@ -121,13 +126,21 @@ function onDeviceReady() {
 			text: text,
 			image: currentImageURI
 		};
+		var index = wishes.push(data) - 1;
+		
+		var wish = render('wish', data);
+		wish = attach_wish_behaviour(wish, index, device.uuid);
+		$('.wishes').append(wish);
+		myScroll.refresh();
+		myScroll.scrollToElement('li:last-child', 0);
+		$(wish).transition({ scale: [1, 0], opacity: 0.0 }, 0);
+		$(wish).transition({ scale: [1, 1], opacity: 1.0 });
+			
 		var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
 		$.post(url, data, function(response) {
-	        $('.make-wish textarea').val('');
-	        currentImageURI = '';
-	        $('.make-wish .picture-frame img').remove();
-	        
-	        loadWishes(device.uuid);
+			$('.make-wish textarea').val('');
+			currentImageURI = '';
+			$('.make-wish .picture-frame img').remove();
 		});
     });
 }
