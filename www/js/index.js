@@ -17,50 +17,47 @@ function render(template, data) {
 	return html;
 }
 
+function attach_wish_behaviour(wish, index, uuid) {
+	// make remove button work
+	wish = $(wish);
+	wish.find('button.remove').click(function() {
+		$.ajax({
+			type: 'POST',
+			url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+			data: { _method: 'delete' },
+			success: function(response) {
+				loadWishes(uuid);
+			}
+		});
+	});
+	
+	// change image on wishes
+	wish.find('img').click(
+	    allowUserToAddPicture(
+	        function(imageURI, context) {
+				$.ajax({
+					type: 'POST',
+					url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+					data: { _method: 'put', image: imageURI },
+					success: function(response) {
+						loadWishes(uuid);
+					}
+				});
+	        }
+	    )
+	);
+	return wish;
+}
+
 function loadWishes(uuid) {
 	$.ajax({
 		url: window.server + uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
 		success: function(wishes) {
-		
 			$('.wishes').html('');
-	
 			wishes.map(function(data, index) {
 				if (! data) return;
-				var header = data.header;
-				var text = data.text;
-				var currentImageURI = data.image;
-
 				var wish = render('wish', data);
-				
-				// make remove button work
-				wish = $(wish);
-				wish.find('button.remove').click(function() {
-					$.ajax({
-						type: 'POST',
-						url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
-						data: { _method: 'delete' },
-						success: function(response) {
-							loadWishes(uuid);
-						}
-					});
-				});
-
-				// change image on wishes
-				wish.find('img').click(
-				    allowUserToAddPicture(
-				        function(imageURI, context) {
-							$.ajax({
-								type: 'POST',
-								url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
-								data: { _method: 'put', image: imageURI },
-								success: function(response) {
-									loadWishes(uuid);
-								}
-							});
-				        }
-				    )
-				);
-				
+				wish = attach_wish_behaviour(wish, index, uuid);
 				$('.wishes').append(wish);
 				myScroll.refresh();
 			});
