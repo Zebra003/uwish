@@ -7,6 +7,18 @@
 
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         
+        <script type="text/uwish-template" id="wish">
+			<li>
+				<img src="{{image}}" />
+				<div class="description">
+					<h2>{{header}}</h2>
+					<p>{{text}}</p>
+				</div>
+				<button class="remove"></button>
+				<div style="clear:left;">
+			</li>
+        </script>
+        
         <script type="text/javascript" src="cordova-2.1.0.js"></script>
         <script type="text/javascript" src="js/plugins/ActionSheet.js"></script>
         <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>

@@ -6,6 +6,17 @@ if (!navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
     $(document).ready(onDeviceReady);
 }
 
+/**
+ * given a template id and data HTML will be returned
+ */
+function render(template, data) {
+	var html = $('#' + template).html();
+	for (var key in data) {
+		html = html.replace('{{' + key + '}}', data[key]);
+	}
+	return html;
+}
+
 function loadWishes(uuid) {
 	$.ajax({
 		url: window.server + uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
@@ -18,18 +29,8 @@ function loadWishes(uuid) {
 				var header = data.header;
 				var text = data.text;
 				var currentImageURI = data.image;
-				
-				var wish = '<li>';
-				if (currentImageURI) {
-				    wish += '<img src="' + currentImageURI + '" />';
-				}
-				
-				wish += '<div class="description"><h2>' + header + '</h2>';
-				wish += '<p>' + text + '</p></div>';
-				wish += '<button class="remove"></button>';
-				wish += '<div style="clear:left;">';
-				
-				wish += '</li>';
+
+				var wish = render('wish', data);
 				
 				// make remove button work
 				wish = $(wish);
@@ -43,7 +44,7 @@ function loadWishes(uuid) {
 						}
 					});
 				});
-				
+
 				// change image on wishes
 				wish.find('img').click(
 				    allowUserToAddPicture(
