@@ -7,49 +7,54 @@ if (!navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
 }
 
 function loadWishes(uuid) {
-	$.get(window.server + uuid + '/wishes', function(wishes) {
+	$.ajax({
+		url: window.server + uuid + '/wishes',
+		cache: false,
+		success: function(wishes) {
 		
-		$('.wishes').html('');
-		
-		wishes.map(function(data, index) {
-			var header = data.header;
-			var text = data.text;
-			var currentImageURI = data.image;
-			
-			var wish = '<li>';
-			if (currentImageURI) {
-			    wish += '<img src="' + currentImageURI + '" />';
-			}
-			
-			wish += '<div class="description"><h2>' + header + '</h2>';
-			wish += '<p>' + text + '</p></div>';
-			wish += '<button class="remove"></button>';
-			wish += '<div style="clear:left;">';
-			
-			wish += '</li>';
-			
-			// make remove button work
-			wish = $(wish);
-			wish.find('button.remove').click(function() {
-				$.post(window.server + uuid + '/wishes/' + index, { _method: 'delete' }, function(response) {
-					loadWishes(uuid);
+			$('.wishes').html('');
+	
+			wishes.map(function(data, index) {
+				if (! data) return;
+				var header = data.header;
+				var text = data.text;
+				var currentImageURI = data.image;
+				
+				var wish = '<li>';
+				if (currentImageURI) {
+				    wish += '<img src="' + currentImageURI + '" />';
+				}
+				
+				wish += '<div class="description"><h2>' + header + '</h2>';
+				wish += '<p>' + text + '</p></div>';
+				wish += '<button class="remove"></button>';
+				wish += '<div style="clear:left;">';
+				
+				wish += '</li>';
+				
+				// make remove button work
+				wish = $(wish);
+				wish.find('button.remove').click(function() {
+					$.post(window.server + uuid + '/wishes/' + index, { _method: 'delete' }, function(response) {
+						loadWishes(uuid);
+					});
 				});
+				
+				// change image on wishes
+				wish.find('img').click(
+				    allowUserToAddPicture(
+				        function(imageURI, context) {
+							$.post(window.server + uuid + '/wishes/' + index, { _method: 'put', image: imageURI }, function(response) {
+								loadWishes(uuid);
+							});
+				        }
+				    )
+				);
+				
+				$('.wishes').append(wish);
+				myScroll.refresh();
 			});
-			
-			// change image on wishes
-			wish.find('img').click(
-			    allowUserToAddPicture(
-			        function(imageURI, context) {
-						$.post(window.server + uuid + '/wishes/' + index, { _method: 'put', image: imageURI }, function(response) {
-							loadWishes(uuid);
-						});
-			        }
-			    )
-			);
-			
-			$('.wishes').append(wish);
-			myScroll.refresh();
-		});
+		}
 	});
 }
 
