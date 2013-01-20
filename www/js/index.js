@@ -38,12 +38,13 @@ function attach_wish_behaviour(wish, index, uuid) {
 	wish.find('img').click(
 	    allowUserToAddPicture(
 	        function(imageURI, context) {
+	        	$(context).attr('src', imageURI);
 				$.ajax({
 					type: 'POST',
 					url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
 					data: { _method: 'put', image: imageURI },
 					success: function(response) {
-						loadWishes(uuid);
+						// TODO? error handling
 					}
 				});
 	        }
@@ -79,7 +80,7 @@ function onDeviceReady() {
 	// for testing in a browser
 	if (! window.device) {
 		window.device = {
-			uuid: 'web-browser'	
+			uuid: 'web-browser'
 		};
 		window.server = 'http://localhost:5000/';
 	}
@@ -135,7 +136,7 @@ function onDeviceReady() {
 		myScroll.scrollToElement('li:last-child', 0);
 		$(wish).transition({ scale: [1, 0], opacity: 0.0 }, 0);
 		$(wish).transition({ scale: [1, 1], opacity: 1.0 });
-			
+		
 		var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
 		$.post(url, data, function(response) {
 			$('.make-wish textarea').val('');
