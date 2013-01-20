@@ -8,8 +8,7 @@ if (!navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
 
 function loadWishes(uuid) {
 	$.ajax({
-		url: window.server + uuid + '/wishes',
-		cache: false,
+		url: window.server + uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
 		success: function(wishes) {
 		
 			$('.wishes').html('');
@@ -35,8 +34,13 @@ function loadWishes(uuid) {
 				// make remove button work
 				wish = $(wish);
 				wish.find('button.remove').click(function() {
-					$.post(window.server + uuid + '/wishes/' + index, { _method: 'delete' }, function(response) {
-						loadWishes(uuid);
+					$.ajax({
+						type: 'POST',
+						url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+						data: { _method: 'delete' },
+						success: function(response) {
+							loadWishes(uuid);
+						}
 					});
 				});
 				
@@ -44,8 +48,13 @@ function loadWishes(uuid) {
 				wish.find('img').click(
 				    allowUserToAddPicture(
 				        function(imageURI, context) {
-							$.post(window.server + uuid + '/wishes/' + index, { _method: 'put', image: imageURI }, function(response) {
-								loadWishes(uuid);
+							$.ajax({
+								type: 'POST',
+								url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+								data: { _method: 'put', image: imageURI },
+								success: function(response) {
+									loadWishes(uuid);
+								}
 							});
 				        }
 				    )
@@ -114,7 +123,7 @@ function onDeviceReady() {
 			text: text,
 			image: currentImageURI
 		};
-		var url = window.server + device.uuid + '/wishes/';
+		var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
 		$.post(url, data, function(response) {
 	        $('.make-wish textarea').val('');
 	        currentImageURI = '';
