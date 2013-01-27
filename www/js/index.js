@@ -6,6 +6,13 @@ if (!navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
     $(document).ready(onDeviceReady);
 }
 
+function generateGUID() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	    return v.toString(16);
+	});
+}
+
 /**
  * given a template id and data HTML will be returned
  */
@@ -18,16 +25,16 @@ function render(template, data) {
 }
 
 function renderWishes(wishes) {
-	wishes.map(function(data, index) {
+	wishes.map(function(data) {
 		if (! data) return;
 		var wish = render('wish', data);
-		wish = attach_wish_behaviour(wish, index, window.device.uuid);
+		wish = attach_wish_behaviour(wish, window.device.uuid);
 		$('.wishes').append(wish);
 	});
 	myScroll.refresh();
 }
 
-function attach_wish_behaviour(wish, index, uuid) {
+function attach_wish_behaviour(wish, uuid) {
 	// make remove button work
 	wish = $(wish);
 	wish.find('button.remove').click(function() {
@@ -37,7 +44,7 @@ function attach_wish_behaviour(wish, index, uuid) {
 		});
 		$.ajax({
 			type: 'POST',
-			url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+			url: window.server + uuid + '/wishes/' + wish.guid + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
 			data: { _method: 'delete' },
 			success: function(response) {
 				// TODO? error handling
@@ -58,6 +65,23 @@ function attach_wish_behaviour(wish, index, uuid) {
 	return wish;
 }
 
+function addWish(wish) {
+	wish.guid = generateGUID();
+	wish.status = 'pending add';
+	wishes.push(wish);
+	storage.setItem('wishes', JSON.stringify(wishes));
+	return wish;
+}
+
+function updateStatus(guid, status) {
+	wishes = JSON.parse(storage.getItem('wishes'));
+	for (var i = 0; i < wishes.length; i++) {
+		if (wishes[i].guid != guid) continue;
+		wishes[i].status = status;
+		storage.setItem('wishes', JSON.stringify(wishes));
+		return wishes[i];
+	}
+}
 
 
 var storage = window.localStorage;
@@ -138,22 +162,30 @@ function onDeviceReady() {
 			text: text,
 			image: currentImageURI
 		};
-		var index = wishes.push(data) - 1;
+		var data = addWish(data);
 		
-		var wish = render('wish', data);
-		wish = attach_wish_behaviour(wish, index, device.uuid);
-		$('.wishes').append(wish);
-		myScroll.refresh();
-		myScroll.scrollToElement('li:last-child', 0);
-		$(wish).transition({ scale: [1, 0], opacity: 0.0 }, 0);
-		$(wish).transition({ scale: [1, 1], opacity: 1.0 });
+		(function renderNewWishToCanvas(data) {
+			var wish = render('wish', data);
+			wish = attach_wish_behaviour(wish, data.guid, device.uuid);
+			$('.wishes').append(wish);
+			myScroll.refresh();
+			myScroll.scrollToElement('li:last-child', 0);
+			$(wish).transition({ scale: [1, 0], opacity: 0.0 }, 0);
+			$(wish).transition({ scale: [1, 1], opacity: 1.0 });
+		}(data));
 		
-		var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
-		$.post(url, data, function(response) {
-			$('.make-wish textarea').val('');
-			currentImageURI = '';
-			$('.make-wish .picture-frame img').remove();
-		});
+		// clear form
+		$('.make-wish textarea').val('');
+		currentImageURI = '';
+		$('.make-wish .picture-frame img').remove();
+		
+		// save wish on server
+		(function (wish) {
+			var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
+			$.post(url, { header: wish.header, text: wish.text, image: wish.image, guid: wish.guid }, function(response) {
+				updateStatus(wish.guid, null);
+			});
+		}(data))
     });
 }
 
