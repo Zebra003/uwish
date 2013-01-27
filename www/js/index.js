@@ -17,6 +17,16 @@ function render(template, data) {
 	return html;
 }
 
+function renderWishes(wishes) {
+	wishes.map(function(data, index) {
+		if (! data) return;
+		var wish = render('wish', data);
+		wish = attach_wish_behaviour(wish, index, window.device.uuid);
+		$('.wishes').append(wish);
+	});
+	myScroll.refresh();
+}
+
 function attach_wish_behaviour(wish, index, uuid) {
 	// make remove button work
 	wish = $(wish);
@@ -48,25 +58,9 @@ function attach_wish_behaviour(wish, index, uuid) {
 	return wish;
 }
 
-function loadWishes(uuid) {
-	$.ajax({
-		url: window.server + uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
-		success: function(localWishes) {
-			$('.wishes').html('');
-			localWishes.map(function(data, index) {
-				if (! data) return;
-				var wish = render('wish', data);
-				wish = attach_wish_behaviour(wish, index, uuid);
-				$('.wishes').append(wish);
-				myScroll.refresh();
-			});
-			wishes = localWishes;
-		}
-	});
-}
 
 
-
+var storage = window.localStorage;
 var myScroll;
 var wishes = [];
 function onDeviceReady() {
@@ -84,8 +78,22 @@ function onDeviceReady() {
 	myScroll = new iScroll('wrapper');
     document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 
-	loadWishes(window.device.uuid);
 
+	if (storage.getItem('wishes')) {
+		console.log('Loading wishes LOCALLY')
+		wishes = JSON.parse(storage.getItem('wishes'));
+		renderWishes(wishes);
+	} else {
+		console.log('Loading wishes from SERVER');
+		$.ajax({
+			url: window.server + window.device.uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+			success: function(receivedWishes) {
+				wishes = receivedWishes;
+				storage.setItem('wishes', JSON.stringify(wishes));
+				renderWishes(wishes);
+			}
+		});
+	}
     var currentImageURI;
 
     // add image from "make-wish"
@@ -105,6 +113,14 @@ function onDeviceReady() {
         event.preventDefault();
         var currentText = $(this).find('textarea').val();
         if (!currentImageURI && !currentText) return;
+
+		// for testing
+		if (currentText == '  Clear' || currentText == '  clear') {
+			console.log('Forcing clear of localStorage.');
+			storage.clear();
+			$(this).find('textarea').val('');
+			return;
+		}
 
         var header = '', text = '';
         if (currentText) {
