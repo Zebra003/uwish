@@ -12,7 +12,7 @@ if (!navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
 function render(template, data) {
 	var html = $('#' + template).html();
 	for (var key in data) {
-		html = html.replace('{{' + key + '}}', data[key]);
+		html = html.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
 	}
 	return html;
 }
@@ -34,22 +34,17 @@ function attach_wish_behaviour(wish, index, uuid) {
 			}
 		});
 	});
-	// change image on wishes
-	wish.find('img').click(
-	    allowUserToAddPicture(
-	        function(imageURI, context) {
-	        	$(context).attr('src', imageURI);
-				$.ajax({
-					type: 'POST',
-					url: window.server + uuid + '/wishes/' + index + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
-					data: { _method: 'put', image: imageURI },
-					success: function(response) {
-						// TODO? error handling
-					}
-				});
-	        }
-	    )
-	);
+	
+	// show overlay image on click
+	wish.find('img').click(function() {
+		var src = $(this).attr('src');
+		var dimensions = 'width: ' + $(window).width() + 'px; height: ' + $(window).height() + 'px;';
+		var overlay = $('<div class="overlay" style="' + dimensions + '"><img src="' + src + '" /></div>');
+		overlay.click(function() {
+			$(this).remove();
+		})
+		$('body').append(overlay);		
+	});
 	return wish;
 }
 

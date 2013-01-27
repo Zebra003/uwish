@@ -98,6 +98,22 @@
 }
 
 
+/* image overlay */
+.overlay {
+	z-index: 10;
+    position: relative;
+    background: rgba(0, 0, 0, 0.4);
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+.overlay img {
+	max-width: 90%;
+	max-height: 90%;
+	border-radius: 12.5%;
+	box-shadow: 0 0 3em 1.5em #000;
+}
+
 
 /* iScroll 4 */
 
