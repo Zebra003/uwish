@@ -83,11 +83,24 @@ function updateStatus(guid, status) {
 	}
 }
 
+function synchronizePending(wishes) {
+	wishes.filter(function(wish) { return wish.status == 'pending add'; }).map(saveWishOnServer);
+}
+
+function saveWishOnServer(wish) {
+	var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
+	$.post(url, { header: wish.header, text: wish.text, image: wish.image, guid: wish.guid }, function(response) {		
+		updateStatus(wish.guid, null);
+	});
+}
+
 
 var storage = window.localStorage;
 var myScroll;
 var wishes = [];
 function onDeviceReady() {
+	
+	console.log('DEBUG: onDeviceReady');
 	
 	window.server = 'http://evening-escarpment-5061.herokuapp.com/';
 	// for testing in a browser
@@ -104,9 +117,10 @@ function onDeviceReady() {
 
 
 	if (storage.getItem('wishes')) {
-		console.log('Loading wishes LOCALLY')
+		console.log('Loading wishes LOCALLY');
 		wishes = JSON.parse(storage.getItem('wishes'));
 		renderWishes(wishes);
+		synchronizePending(wishes);
 	} else {
 		console.log('Loading wishes from SERVER');
 		$.ajax({
@@ -179,13 +193,7 @@ function onDeviceReady() {
 		currentImageURI = '';
 		$('.make-wish .picture-frame img').remove();
 		
-		// save wish on server
-		(function (wish) {
-			var url = window.server + device.uuid + '/wishes/' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone';
-			$.post(url, { header: wish.header, text: wish.text, image: wish.image, guid: wish.guid }, function(response) {
-				updateStatus(wish.guid, null);
-			});
-		}(data))
+		saveWishOnServer(data);
     });
 }
 
