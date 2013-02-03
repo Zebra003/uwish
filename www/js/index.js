@@ -83,7 +83,8 @@ function updateStatus(guid, status) {
 	}
 }
 
-function synchronizePending(wishes) {
+function synchronizePending() {
+	var wishes = JSON.parse(storage.getItem('wishes'))
 	wishes.filter(function(wish) { return wish.status == 'pending add'; }).map(saveWishOnServer);
 }
 
@@ -94,6 +95,7 @@ function saveWishOnServer(wish) {
 	});
 }
 
+document.addEventListener('resume', synchronizePending, false);
 
 var storage = window.localStorage;
 var myScroll;
@@ -120,7 +122,7 @@ function onDeviceReady() {
 		console.log('Loading wishes LOCALLY');
 		wishes = JSON.parse(storage.getItem('wishes'));
 		renderWishes(wishes);
-		synchronizePending(wishes);
+		synchronizePending();
 	} else {
 		console.log('Loading wishes from SERVER');
 		$.ajax({
@@ -176,7 +178,7 @@ function onDeviceReady() {
 			text: text,
 			image: currentImageURI
 		};
-		var data = addWish(data);
+		data = addWish(data);
 		
 		(function renderNewWishToCanvas(data) {
 			var wish = render('wish', data);
