@@ -27,33 +27,28 @@ function render(template, data) {
 function renderWishes(wishes) {
 	wishes.map(function(data) {
 		if (! data) return;
+		if (data.status == 'pending remove') return;
 		var wish = render('wish', data);
-		wish = attach_wish_behaviour(wish, window.device.uuid);
+		wish = attach_wish_behaviour(wish, data);
 		$('.wishes').append(wish);
 	});
 	myScroll.refresh();
 }
 
-function attach_wish_behaviour(wish, uuid) {
+function attach_wish_behaviour(htmlWish, wish) {
 	// make remove button work
-	wish = $(wish);
-	wish.find('button.remove').click(function() {
+	htmlWish = $(htmlWish);
+	htmlWish.find('button.remove').click(function() {
 		$(this).parent().transition({ scale: [1, 0], opacity: 0 }, function() {
 			$(this).remove();
 			myScroll.refresh();
 		});
-		$.ajax({
-			type: 'POST',
-			url: window.server + uuid + '/wishes/' + wish.guid + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
-			data: { _method: 'delete' },
-			success: function(response) {
-				// TODO? error handling
-			}
-		});
+		updateStatus(wish.guid, 'pending remove');
+		removeWishOnServer(wish);
 	});
 	
 	// show overlay image on click
-	wish.find('img').click(function() {
+	htmlWish.find('img').click(function() {
 		var src = $(this).attr('src');
 		var dimensions = 'width: ' + $(window).width() + 'px; height: ' + $(window).height() + 'px;';
 		var overlay = $('<div class="overlay" style="' + dimensions + '"><img src="' + src + '" /></div>');
@@ -62,7 +57,7 @@ function attach_wish_behaviour(wish, uuid) {
 		})
 		$('body').append(overlay);		
 	});
-	return wish;
+	return htmlWish;
 }
 
 function addWish(wish) {
@@ -86,6 +81,7 @@ function updateStatus(guid, status) {
 function synchronizePending() {
 	var wishes = JSON.parse(storage.getItem('wishes'))
 	wishes.filter(function(wish) { return wish.status == 'pending add'; }).map(saveWishOnServer);
+	wishes.filter(function(wish) { return wish.status == 'pending remove'; }).map(removeWishOnServer);
 }
 
 function saveWishOnServer(wish) {
@@ -95,15 +91,31 @@ function saveWishOnServer(wish) {
 	});
 }
 
+function removeWishOnServer(wish) {
+	$.ajax({
+		type: 'POST',
+		url: window.server + device.uuid + '/wishes/' + wish.guid + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
+		data: { _method: 'delete' },
+		success: function(response) {
+			
+			// remove wish locally
+			var newWishes = [];
+			for (var i = 0; i < wishes.length; i++) {
+				if (wishes[i].guid != wish.guid) newWishes.push(wishes[i]);
+			}
+			wishes = newWishes;
+			storage.setItem('wishes', JSON.stringify(wishes));
+			return wish;
+		}
+	});	
+}
+
 document.addEventListener('resume', synchronizePending, false);
 
 var storage = window.localStorage;
 var myScroll;
 var wishes = [];
 function onDeviceReady() {
-	
-	console.log('DEBUG: onDeviceReady');
-	
 	window.server = 'http://evening-escarpment-5061.herokuapp.com/';
 	// for testing in a browser
 	if (! window.device) {
@@ -119,12 +131,10 @@ function onDeviceReady() {
 
 
 	if (storage.getItem('wishes')) {
-		console.log('Loading wishes LOCALLY');
 		wishes = JSON.parse(storage.getItem('wishes'));
 		renderWishes(wishes);
 		synchronizePending();
 	} else {
-		console.log('Loading wishes from SERVER');
 		$.ajax({
 			url: window.server + window.device.uuid + '/wishes' + '?string-because-we-do-not-know-how-to-clear-the-cache-on-iphone',
 			success: function(receivedWishes) {
@@ -181,13 +191,13 @@ function onDeviceReady() {
 		data = addWish(data);
 		
 		(function renderNewWishToCanvas(data) {
-			var wish = render('wish', data);
-			wish = attach_wish_behaviour(wish, data.guid, device.uuid);
-			$('.wishes').append(wish);
+			var htmlWish = render('wish', data);
+			htmlWish = attach_wish_behaviour(htmlWish, data);
+			$('.wishes').append(htmlWish);
 			myScroll.refresh();
 			myScroll.scrollToElement('li:last-child', 0);
-			$(wish).transition({ scale: [1, 0], opacity: 0.0 }, 0);
-			$(wish).transition({ scale: [1, 1], opacity: 1.0 });
+			$(htmlWish).transition({ scale: [1, 0], opacity: 0.0 }, 0);
+			$(htmlWish).transition({ scale: [1, 1], opacity: 1.0 });
 		}(data));
 		
 		// clear form
