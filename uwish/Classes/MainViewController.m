@@ -111,7 +111,7 @@
 
 #pragma UIWebDelegate implementation
 
-- (void) webViewDidFinishLoad:(UIWebView*) theWebView 
+/*- (void) webViewDidFinishLoad:(UIWebView*) theWebView
 {
      // only valid if ___PROJECTNAME__-Info.plist specifies a protocol to handle
      if (self.invokeString)
@@ -127,6 +127,7 @@
 
 	return [super webViewDidFinishLoad:theWebView];
 }
+ */
 
 /* Comment out the block below to over-ride */
 /*
