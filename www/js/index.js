@@ -116,17 +116,26 @@ var storage = window.localStorage;
 var myScroll;
 var wishes = [];
 function onDeviceReady() {
-	window.server = 'http://evening-escarpment-5061.herokuapp.com/';
-	// for testing in a browser
-	if (! window.device) {
-		window.device = {
-			uuid: 'web-browser'
-		};
-		window.server = 'http://localhost:5000/';
-	}
+  console.log("onDeviceReady");
+  window.server = 'http://evening-escarpment-5061.herokuapp.com/';
+  // for testing in a browser
+  console.log(window.device.name);
+  if (!window.device) {
+    window.device = {
+      uuid: 'web-browser'
+    };
+    window.server = 'http://localhost:5100/';
+  }
 
-	// iScroll 4
-	myScroll = new iScroll('wrapper');
+  if (window.device.name === "iPhone Simulator") {
+    window.device = {
+      uuid: 'simulator'
+    };
+    window.server = 'http://localhost:5100/';
+  }
+
+  // iScroll 4
+  myScroll = new iScroll('wrapper');
     document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 
 
